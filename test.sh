@@ -5,11 +5,20 @@ read word
 
 result=$(grep -B 1 -w $word /Users/mikekotsch/Documents/Programming/snippets/subtitles.srt | head -1)
 
-IFS=' --> ' read -ra TSTAMP <<< "$result"
+# Old Version
 
-ffmpeg -i /Users/mikekotsch/Documents/Programming/snippets/inception.avi -ss "${TSTAMP[0]}" -ss "${TSTAMP[1]}" -vcodec copy -acodec copy test.avi
+tmp=${result//,/.}
 
-echo "${TSTAMP[0]}"
-echo "${TSTAMP[1]}"
+IFS=' --> ' read -a TSTAMP <<< "$tmp"
 
-# echo "The word $word was found here:\n$result"
+start="${TSTAMP[0]}"
+end="${TSTAMP[3]}"
+
+# start=${tmp1%,*}
+# end=${tmp2%,*}
+
+echo "$start and $end"
+
+ffmpeg -i /Users/mikekotsch/Documents/Programming/snippets/inception.avi -ss $start -to $end -vcodec copy -acodec copy test.avi
+
+# ffmpeg -i test.avi finished.avi
