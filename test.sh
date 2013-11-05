@@ -8,21 +8,35 @@ read word
 result=$(grep -B 1 -w $word /Users/mikekotsch/Documents/Programming/snippets/subtitles.srt | head -1)
 
 # Replace comma with dot
-tmp=${result//,/.}
+tmp=${result//,/:}
 
 # Split at the arrow
 IFS=' --> ' read -a TSTAMP <<< "$tmp"
 
 # Assign start and end with values
 start="${TSTAMP[0]}"
+echo "Start: $start"
+
 end="${TSTAMP[3]}"
+echo "End: $end"
+
+# start="${TSTAMP[0]}"
+# end="${TSTAMP[3]}"
 
 # Get duration
-# Example: echo 10:20:23 | sed 's/:/ /g' | awk '{print $1"*3600+"$2"*60+"$3}' | bc
+t1_sec=`echo $start | sed 's/:/ /g' | awk '{print $1"*3600000+"$2"*60000+"$3"*1000"+$4}' | bc`
+echo "start: $t1_sec"
+t2_sec=`echo $end | sed 's/:/ /g' | awk '{print $1"*3600000+"$2"*60000+"$3"*1000"+$4}' | bc`
+echo "end: $t2_sec"
 
-# echo "$start and $end"
-# echo $t
+difference=$[$t2_sec-$t1_sec]
 
-# ffmpeg -i /Users/mikekotsch/Documents/Programming/snippets/inception.avi -ss $start -to $end -c:v copy -c:a copy test.avi
+_second=$[$difference/1000%60]
+_milli=$[$difference%1000]
 
-# ffmpeg -i test.avi finished.avi
+diff="00:00:$_second.$_milli"
+echo "diff: $diff"
+
+#ffmpeg -i /Users/mikekotsch/Documents/Programming/snippets/inception.avi -ss $start -t $diff -vcodec copy -acodec copy test.avi
+
+#ffmpeg -i test.avi finished.avi
