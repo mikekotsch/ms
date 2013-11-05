@@ -1,44 +1,52 @@
 #!/bin/bash
-echo "Type the word that you want to translate to awesome, followed by [ENTER]: "
 
-# Get user input
-read word
+###_FILE="/Users/mikekotsch/Documents/Programming/snippets/subtitles.srt"
+_FILE="./subtitles.srt"
 
-# Search for specific word and give only start and end time
-result=$(grep -B 1 -w $word /Users/mikekotsch/Documents/Programming/snippets/subtitles.srt | head -1)
+### HIC SVNT LEONES.
 
-# Replace comma with dot
-# tmp=${result//,/:}
+function set_start_end {
+	PARAMETER="$@"
+	start=$(echo "$PARAMETER" | awk '{print $1}')
+	end=$(echo "$PARAMETER" | awk '{print $3}')
+}
 
-echo "Result: $result"
-
-# Split at the arrow
-IFS=' --> ' read -a TSTAMP <<< "$result"
-
-# Assign start and end with values
-start="${TSTAMP[0]}"
-start_cal=${start//,/:}
-start=${start//,/.}
-
-end="${TSTAMP[3]}"
-end_cal=${end//,/:}
+function has_time {
+	PARAMETER="$@"
+	[[ "$PARAMETER" == *--\>* ]] && _RESULT=1 || _RESULT=0
+	echo $_RESULT
+}
 
 
-# Get duration
-t1=`echo $start_cal | sed 's/:/ /g' | awk '{print $1"*3600000+"$2"*60000+"$3"*1000"+$4}' | bc`
-# echo "start: $t1_sec"
-  t2=`echo $end_cal | sed 's/:/ /g' | awk '{print $1"*3600000+"$2"*60000+"$3"*1000"+$4}' | bc`
-# echo "end:   $t2_sec"
+# take search string from command line as well.
+if [[ "$#" -eq 0 ]];then
+	echo "Type the word that you want to translate to awesome, followed by [ENTER]: "
+	# Get user input
+	read word
+else
+	word="$@"
+fi	
 
-difference=$[$t2-$t1]
-echo "Difference: $difference"
+for line in $(seq 1 5);do
+	result=$(grep -B $line -w "$word" ${_FILE} | head -1)
+	[[ $(has_time $result) == "1" ]] && break
+done
+		
+set_start_end $result
+echo $start
+echo $end
 
-_second=$[$difference/1000%60]
-_milli=$[$difference%1000]
+diff_hours_in_minutes="$(( ( ${end:0:2} - ${start:0:2} ) * 60 ))"
+diff_minutes_in_seconds="$(( ( ${diff_hours_in_minutes} + ${end:3:2} - ${start:3:2} ) * 60 ))"
+diff_seconds_in_milliseconds="$(( ( ${diff_minutes_in_seconds} + ${end:6:2} - ${start:6:2} ) *1000 ))"
+diff_milliseconds="$(( ( ${diff_seconds_in_milliseconds} +  ${end:9:3} - ${start:9:3})  ))"
+seconds_decimal=$(bc <<< "scale=3; ${diff_milliseconds} / 1000")
+diff="00:00:${seconds_decimal}"
 
-diff="00:00:$_second.$_milli"
 echo "diff: $diff"
 
-ffmpeg -i /Users/mikekotsch/Documents/Programming/snippets/inception.avi -ss $start -t $diff -vcodec copy -acodec copy test.avi
+echo "ffmpeg -i /Users/mikekotsch/Documents/Programming/snippets/inception.avi -ss ${start} -t ${diff} -vcodec copy -acodec copy test.avi"
+#ffmpeg -i /Users/mikekotsch/Documents/Programming/snippets/inception.avi -ss ${start} -t ${diff} -vcodec copy -acodec copy test.avi
 
-ffmpeg -i test.avi finished.avi
+echo "ffmpeg -i test.avi finished.avi"
+#ffmpeg -i test.avi finished.avi
