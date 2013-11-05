@@ -18,10 +18,10 @@ start="${TSTAMP[0]}"
 end="${TSTAMP[3]}"
 
 # Get duration
+# Example: echo 10:20:23 | sed 's/:/ /g' | awk '{print $1"*3600+"$2"*60+"$3}' | bc
 
-
-echo "$start and $end"
-echo $t
+# echo "$start and $end"
+# echo $t
 
 # ffmpeg -i /Users/mikekotsch/Documents/Programming/snippets/inception.avi -ss $start -to $end -c:v copy -c:a copy test.avi
 
