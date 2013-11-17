@@ -12,6 +12,7 @@ COUNTER=0
 
 ### FUNCTIONS
 
+# split input into single words
 function get_words_from {
     read -a words <<< $1
     for i in ${words[@]}; do
@@ -20,6 +21,7 @@ function get_words_from {
     done
 }
 
+# extract a clip for single searched word
 function render_clip {
     result=$(get_timestamps_for_word $1)
     start=$(get_start $result)
@@ -31,6 +33,7 @@ function render_clip {
     ffmpeg -i $_PATH/$title.mp4 -ss $start -t $delta -vcodec copy -acodec copy ./_output/$2_$title_$1.mp4
 }
 
+# get timestamp for searched word
 function get_timestamps_for_word {
     for line in $(seq 1 5);do
         result=$(grep -B $line -r -w -i --include='*.srt' $1 --exclude='*.mp4' * | head -1)
@@ -39,6 +42,7 @@ function get_timestamps_for_word {
     echo $result
 }
 
+# get difference between start & end
 function get_delta {
     start=$1
     end=$2
@@ -51,6 +55,7 @@ function get_delta {
     echo $delta
 }
 
+# get starting timestamp
 function get_start {
     PARAMETER="$@"
     start=$(echo "$PARAMETER" | awk '{print $1}')
@@ -59,6 +64,7 @@ function get_start {
     echo $start
 }
 
+# get ending timestamp
 function get_end {
     PARAMETER="$@"
     end=$(echo "$PARAMETER" | awk '{print $3}')
@@ -66,6 +72,7 @@ function get_end {
     echo $end
 }
 
+# get filename / movie title
 function get_title {
     PARAMETER="$@"
     title=$(echo "$PARAMETER" | awk -F '-' '{print $1}')
@@ -74,6 +81,7 @@ function get_title {
     echo $title
 }
 
+# find out if line is a timestamp
 function has_timestamp {
     PARAMETER="$@"
     [[ "$PARAMETER" == *--\>* ]] && _RESULT=1 || _RESULT=0
