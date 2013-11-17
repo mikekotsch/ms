@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###_FILE="/Users/mikekotsch/Documents/Programming/snippets/subtitles.srt"
-_FILE="./subtitles.srt"
+_FILE="./assets/fightclub.srt"
 
 ### HIC SVNT LEONES.
 
@@ -46,10 +46,10 @@ diff="00:00:${seconds_decimal}"
 echo "diff: $diff"
 
 start=${start//,/.}
-echo "start: $start"
+###echo "start: $start"
 
-echo "ffmpeg -i /Users/mikekotsch/Documents/Programming/snippets/inception.avi -ss ${start} -t ${diff} -vcodec copy -acodec copy test.avi"
-ffmpeg -i /Users/mikekotsch/Documents/Programming/snippets/inception.avi -ss ${start} -t ${diff} -vcodec copy -acodec copy test.avi
+###echo "ffmpeg -i /Users/mikekotsch/Documents/Programming/snippets/assets/fightclub.mp4 -ss ${start} -t ${diff} -vcodec copy -acodec copy test.mp4"
+###ffmpeg -i /Users/mikekotsch/Documents/Programming/snippets/assets/fightclub.mp4 -ss ${start} -t ${diff} -vcodec copy -acodec copy test.mp4
 
-echo "ffmpeg -i test.avi finished.avi"
-ffmpeg -i test.avi finished.avi
+###echo "ffmpeg -i test.mp4 finished.mp4"
+###ffmpeg -i test.mp4 finished.mp4
