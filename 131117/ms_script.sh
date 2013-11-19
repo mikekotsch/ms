@@ -29,6 +29,7 @@ function render_clip {
     delta=$(get_delta $start $end)
     echo $delta
     title=$(get_title $result)
+    echo $title
 
     ffmpeg -i $_PATH/$title.mp4 -ss $start -t $delta -vcodec copy -acodec copy ./_output/$2_$title_$1.mp4
 }
